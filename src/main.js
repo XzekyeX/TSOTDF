@@ -15,7 +15,7 @@ function init(){
 		height = game[0].height = window.innerHeight;		
 		engine.resize();
     }
-	initInput();
+	//initInput();
 	var scene = createScene(game[0],engine);
 	engine.runRenderLoop(function () {
 		scene.render();
@@ -30,6 +30,10 @@ function createScene(canvas,engine){
 
     // Change the scene background color to green.
     scene.clearColor = new BABYLON.Color3(0.1, 0.2, 0.8);
+	
+	if(isKeyDown(65)) {
+		console.log("keyDown!");
+	}
 
     // This creates and positions a free camera
     var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
