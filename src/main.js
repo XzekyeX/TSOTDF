@@ -74,12 +74,13 @@ function createScene(canvas, engine) {
 
     var loader = new BABYLON.AssetsManager(scene);
     loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
-
+    loadMesh(loader,"Tree2","DeadTree2.obj",new BABYLON.Vector3(0,0,-10));
+    loader.load();
     // This creates a light, aiming 0,1,0 - to the sky.
-    // var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 
-    // // Dim the light a small amount
-    // light.intensity = .5;
+    // Dim the light a small amount
+    light.intensity = .3;
 
     return scene;
 }
@@ -89,5 +90,4 @@ function loadMesh(loader,name,obj,pos){
     tree.onSuccess = function (task) {
         task.loadedMeshes[0].position = pos;
     }
-    loader.load();
 }
