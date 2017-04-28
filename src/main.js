@@ -50,12 +50,12 @@ function getCurrentTimeMills() {
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
 }
-var dude,dx,dy,dz;
+var dude, dx, dy, dz;
 
 function update(scene) {
-    if(dude != null) {
-        dx += 0.01;
-        dude.position = new BABYLON.Vector3(dx,dy,dz);
+    if (dude != null) {
+        dx += 0.1;
+        dude.position = new BABYLON.Vector3(dx, dy, dz);
     }
 }
 
@@ -102,9 +102,11 @@ function createScene(canvas, engine) {
 
 function loadMesh(loader, name, obj, pos, mat) {
     var tree = loader.addMeshTask(name, "", "res/", obj);
+    var mesh;
     tree.onSuccess = function (task) {
-        task.loadedMeshes[0].position = pos;
-        if (mat != null) task.loadedMeshes[0].material = mat;
+        mesh = task.loadedMeshes[0];
+        if (pos != null) mesh.position = pos;
+        if (mat != null) mesh.material = mat;
     }
-    return tree;
+    return mesh;
 }
