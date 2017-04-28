@@ -5,6 +5,8 @@
 */
 var width = 640;
 var height = 480;
+var blue = 1.0;
+var dir = 0;
 function init(){
 	var game = $("<canvas width=\""+width+"\" height=\""+height+"\" />");
 	$("#game").append(game);
@@ -15,11 +17,22 @@ function init(){
 		height = game[0].height = window.innerHeight;		
 		engine.resize();
     }
+	resizeCanvas();
 	var scene = createScene(game[0],engine);
 	engine.runRenderLoop(function () {
 		scene.render();
+        if(dir == 0) {
+            blue += 0.01;
+            if(blue >= 1.0) dir = 1;
+        } else{
+            blue -= 0.01;
+            if(blue <= 0) dir = 0;
+        } 
 	});
-	resizeCanvas();
+}
+//value min max
+function clamp(value,min,max){
+    return value >= max ? max : value <= min ? min : value;
 }
 
 function createScene(canvas,engine){
@@ -28,7 +41,7 @@ function createScene(canvas,engine){
     var scene = new BABYLON.Scene(engine);
 
     // Change the scene background color to green.
-    scene.clearColor = new BABYLON.Color3(0.1, 0.2, 0.5);
+    scene.clearColor = new BABYLON.Color3(0.1, 0.2, clamp(blue,0,1.0));
 	
     // This creates and positions a free camera
     var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
