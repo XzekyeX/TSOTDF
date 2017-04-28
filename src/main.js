@@ -50,10 +50,14 @@ function getCurrentTimeMills() {
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
 }
+var dude;
 
 function update(scene) {
-
+    if(dude != null) {
+        dude.position.add(new BABYLON.Vector3(0,0,0.01));
+    }
 }
+
 
 function createScene(canvas, engine) {
 
@@ -73,14 +77,14 @@ function createScene(canvas, engine) {
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    var mat = new BABYLON.StandardMaterial("tex1",scene);
-    var tree = loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
-    tree.material = mat;
-    mat.diffuseColor = new BABYLON.Color3(0.1,0.8,0.1);
+    var mat = new BABYLON.StandardMaterial("tex1", scene);
+    mat.diffuseColor = new BABYLON.Color3(0.1, 0.8, 0.1);
 
-    loadMesh(loader,"Tree2","DeadTree2.obj",new BABYLON.Vector3(0,0,-10));
+    loadMesh(loader, "Tree1", "DeadTree1.obj", new BABYLON.Vector3(-5, 0, -5), mat);
 
-    loadMesh(loader,"Dude","Dude.obj",new BABYLON.Vector3(0,0,0));
+    loadMesh(loader, "Tree2", "DeadTree2.obj", new BABYLON.Vector3(0, 0, -10));
+
+    dude = loadMesh(loader, "Dude", "Dude.obj", new BABYLON.Vector3(0, 0, 0));
 
 
     loader.load();
@@ -95,10 +99,11 @@ function createScene(canvas, engine) {
     return scene;
 }
 
-function loadMesh(loader,name,obj,pos){
+function loadMesh(loader, name, obj, pos, mat) {
     var tree = loader.addMeshTask(name, "", "res/", obj);
     tree.onSuccess = function (task) {
         task.loadedMeshes[0].position = pos;
+        if (mat != null) task.loadedMeshes[0].material = mat;
     }
     return tree;
 }
