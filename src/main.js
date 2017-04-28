@@ -36,7 +36,7 @@ function init() {
         scene.render();
         if ((getCurrentTimeMills() - timer) >= 1000) {
             timer += 1000;
-          //  console.log("ups[" + ups + "]");
+            console.log("ups[" + ups + "]");
             ups = 0;
         }
     });
