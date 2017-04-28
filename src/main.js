@@ -21,25 +21,25 @@ function init() {
     var scene = createScene(game[0], engine);
     scene.registerBeforeRender(function () {
         console.log("Register!");
-        var delta = 0;
-        var ns = 1000000000 / 60.0;
-        var lastTime = ((new Date()).getTime() / 1000);
-        var timer = (new Date()).getTime();
-        var ups;
+        // var delta = 0;
+        // var ns = 1000000000 / 60.0;
+        // var lastTime = ((new Date()).getTime() / 1000);
+        // var timer = (new Date()).getTime();
+        // var ups;
         engine.runRenderLoop(function () {
-            var now = ((new Date()).getTime() / 1000);
-            delta += (now - lastTime) / ns;
-            while (delta >= 1) {
-                update(scene);
-                ups++;
-                delta--;
-            }
+            // var now = ((new Date()).getTime() / 1000);
+            // delta += (now - lastTime) / ns;
+            // while (delta >= 1) {
+            //     update(scene);
+            //     ups++;
+            //     delta--;
+            // }
             scene.render();
-            if (((new Date()).getTime() - timer) >= 1000) {
-                timer += 1000;
-                console.log("ups[" + ups + "]");
-                ups = 0;
-            }
+            // if (((new Date()).getTime() - timer) >= 1000) {
+            //     timer += 1000;
+            //     console.log("ups[" + ups + "]");
+            //     ups = 0;
+            // }
         });
     });
 }
