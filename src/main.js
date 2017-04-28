@@ -74,11 +74,18 @@ function createScene(canvas, engine) {
 
     var loader = new BABYLON.AssetsManager(scene);
     var mat = new BABYLON.StandardMaterial("tex1",scene);
-    mat.diffuseColor = new BABYLON.Color3(0.1,0.8,0.1);
     var tree = loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
     tree.material = mat;
+    mat.diffuseColor = new BABYLON.Color3(0.1,0.8,0.1);
+
     loadMesh(loader,"Tree2","DeadTree2.obj",new BABYLON.Vector3(0,0,-10));
+
+    loadMesh(loader,"Dude","Dude.obj",new BABYLON.Vector3(0,0,0));
+
+
     loader.load();
+
+
     // This creates a light, aiming 0,1,0 - to the sky.
     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 
