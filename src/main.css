@@ -11,5 +11,6 @@
 	pointer-events: none;
 	transition: transform linear -1ms, -webkit-transform linear -1ms;
 	z-index: -100;
-	visibility: visible;
+	visibility: visible;	
+	touch-action: none;
 }
