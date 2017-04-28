@@ -60,7 +60,7 @@ function createScene(canvas,engine){
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    var tree = loader.addMeshTask("DeadTree1","","res/","DeadTree1.obj");
+    var tree = loader.addMeshTask("DeadTree1","","../res/","DeadTree1.obj");
 
     // This creates a light, aiming 0,1,0 - to the sky.
     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
