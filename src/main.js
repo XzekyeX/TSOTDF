@@ -23,11 +23,18 @@ function init(){
 		scene.render();
         if(dir == 0) {
             blue += 0.01;
-            if(blue >= 1.0) dir = 1;
+            if(blue >= 1.0){
+                dir = 1;
+                console.log("dir: " + dir);
+            } 
         } else{
             blue -= 0.01;
-            if(blue <= 0) dir = 0;
+            if(blue <= 0){
+                dir = 0;
+                console.log("dir: " + dir);
+            } 
         } 
+        scene.clearColor = new BABYLON.Color3(0.1,0.2,clamp(blue,0,1.0));
 	});
 }
 //value min max
@@ -41,7 +48,7 @@ function createScene(canvas,engine){
     var scene = new BABYLON.Scene(engine);
 
     // Change the scene background color to green.
-    scene.clearColor = new BABYLON.Color3(0.1, 0.2, clamp(blue,0,1.0));
+    scene.clearColor = new BABYLON.Color3(0.1, 0.2, 1.0);
 	
     // This creates and positions a free camera
     var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
