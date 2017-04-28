@@ -50,11 +50,12 @@ function getCurrentTimeMills() {
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
 }
-var dude;
+var dude,dx,dy,dz;
 
 function update(scene) {
     if(dude != null) {
-        dude.position.add(new BABYLON.Vector3(0,0,0.01));
+        dx += 0.01;
+        dude.position = new BABYLON.Vector3(dx,dy,dz);
     }
 }
 
