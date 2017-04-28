@@ -36,7 +36,7 @@ function init() {
         scene.render();
         if ((getCurrentTimeMills() - timer) >= 1000) {
             timer += 1000;
-            console.log("ups[" + ups + "]");
+            // console.log("ups[" + ups + "]");
             ups = 0;
         }
     });
@@ -73,27 +73,21 @@ function createScene(canvas, engine) {
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    var tree = loader.addMeshTask("DeadTree1", "", "res/", "DeadTree1.obj");
-    tree.onSuccess = function (task) {
-        task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
-    }
-    loader.load();
+    loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
 
     // This creates a light, aiming 0,1,0 - to the sky.
-    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    // var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 
-    // Dim the light a small amount
-    light.intensity = .5;
+    // // Dim the light a small amount
+    // light.intensity = .5;
 
-    // Let's try our built-in 'sphere' shape. Params: name, subdivisions, size, scene
-    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
-
-    // Move the sphere upward 1/2 its height
-    sphere.position.y = 1;
-
-    // Let's try our built-in 'ground' shape.  Params: name, width, depth, subdivisions, scene
-    var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
-
-    // Leave this function
     return scene;
+}
+
+function loadMesh(loader,name,obj,pos){
+    var tree = loader.addMeshTask(name, "", "res/", obj);
+    tree.onSuccess = function (task) {
+        task.loadedMeshes[0].position = pos;
+    }
+    loader.load();
 }
