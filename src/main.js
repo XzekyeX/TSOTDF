@@ -73,7 +73,7 @@ function createScene(canvas, engine) {
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    var tree = loader.addMeshTask("skull", "", "res/", "DeadTree1.obj");
+    var tree = loader.addMeshTask("DeadTree1", "", "res/", "DeadTree1.obj");
     tree.onSuccess = function (task) {
         task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
     }
