@@ -19,27 +19,37 @@ function init() {
     }
     resizeCanvas();
     var scene = createScene(game[0], engine);
-    engine.runRenderLoop(function () {
-        scene.render();
-        if (dir == 0) {
-            blue += 0.01;
-            if (blue >= 1.0) {
-                dir = 1;
-                console.log("dir: " + dir);
+    scene.registerBeforeRender(function () {
+        console.log("Register!");
+        var delta = 0;
+        var ns = 1000000000 / 60.0;
+        var lastTime = ((new Date()).getTime() / 1000);
+        var timer = (new Date()).getTime();
+        var ups;
+        engine.runRenderLoop(function () {
+            var now = ((new Date()).getTime() / 1000);
+            delta += (now - lastTime) / ns;
+            while (delta >= 1) {
+                update(scene);
+                ups++;
+                delta--;
             }
-        } else {
-            blue -= 0.01;
-            if (blue <= 0) {
-                dir = 0;
-                console.log("dir: " + dir);
+            scene.render();
+            if (((new Date()).getTime() - timer) >= 1000) {
+                timer += 1000;
+                console.log("ups[" + ups + "]");
+                ups = 0;
             }
-        }
-        scene.clearColor = new BABYLON.Color3(0.1, 0.2, clamp(blue, 0.4, 1.0));
+        });
     });
 }
 //value min max
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
+}
+
+function update(scene) {
+
 }
 
 function createScene(canvas, engine) {
