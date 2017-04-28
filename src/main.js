@@ -34,7 +34,7 @@ function init(){
                 console.log("dir: " + dir);
             } 
         } 
-        scene.clearColor = new BABYLON.Color3(0.1,0.2,clamp(blue,0,1.0));
+        scene.clearColor = new BABYLON.Color3(0.1,0.2,clamp(blue,0.4,1.0));
 	});
 }
 //value min max
