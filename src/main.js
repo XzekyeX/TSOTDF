@@ -15,7 +15,7 @@ function init(){
 		height = game[0].height = window.innerHeight;		
 		engine.resize();
     }
-	//initInput();
+	
 	var scene = createScene(game[0],engine);
 	engine.runRenderLoop(function () {
 		scene.render();
