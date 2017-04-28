@@ -73,7 +73,10 @@ function createScene(canvas, engine) {
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
+    var mat = new BABYLON.StandardMaterial("tex1",scene);
+    mat.diffuseColor = new BABYLON.Color3(0.1,0.8,0.1);
+    var tree = loadMesh(loader,"Tree1","DeadTree1.obj",new BABYLON.Vector3(-5,0,-5));
+    tree.material = mat;
     loadMesh(loader,"Tree2","DeadTree2.obj",new BABYLON.Vector3(0,0,-10));
     loader.load();
     // This creates a light, aiming 0,1,0 - to the sky.
@@ -90,4 +93,5 @@ function loadMesh(loader,name,obj,pos){
     tree.onSuccess = function (task) {
         task.loadedMeshes[0].position = pos;
     }
+    return tree;
 }
