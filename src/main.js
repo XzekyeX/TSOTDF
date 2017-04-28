@@ -19,30 +19,33 @@ function init() {
     }
     resizeCanvas();
     var scene = createScene(game[0], engine);
-    scene.registerBeforeRender(function () {
-        console.log("Register!");
-        // var delta = 0;
-        // var ns = 1000000000 / 60.0;
-        // var lastTime = ((new Date()).getTime() / 1000);
-        // var timer = (new Date()).getTime();
-        // var ups;
-        engine.runRenderLoop(function () {
-            // var now = ((new Date()).getTime() / 1000);
-            // delta += (now - lastTime) / ns;
-            // while (delta >= 1) {
-            //     update(scene);
-            //     ups++;
-            //     delta--;
-            // }
-            scene.render();
-            // if (((new Date()).getTime() - timer) >= 1000) {
-            //     timer += 1000;
-            //     console.log("ups[" + ups + "]");
-            //     ups = 0;
-            // }
-        });
+    var delta = 0;
+    var ns = 1000000000 / 60.0;
+    var lastTime = window.performance.now();
+    var timer = getCurrentTimeMills();
+    var ups = 0;
+    engine.runRenderLoop(function () {
+        var now = window.performance.now();
+        delta += (now - lastTime) * 0.06;
+        lastTime = now;
+        while (delta >= 1) {
+            delta--;
+            update(scene);
+            ups++;
+        }
+        scene.render();
+        if ((getCurrentTimeMills() - timer) >= 1000) {
+            timer += 1000;
+          //  console.log("ups[" + ups + "]");
+            ups = 0;
+        }
     });
 }
+
+function getCurrentTimeMills() {
+    return (new Date()).getTime();
+}
+
 //value min max
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
@@ -70,10 +73,11 @@ function createScene(canvas, engine) {
     camera.attachControl(canvas, false);
 
     var loader = new BABYLON.AssetsManager(scene);
-    var tree = loader.addMeshTask("Skull Task", "", "res/", "skull.babylon");
+    var tree = loader.addMeshTask("skull", "", "res/", "skull.babylon");
     tree.onSuccess = function (task) {
         task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
     }
+    loader.load();
 
     // This creates a light, aiming 0,1,0 - to the sky.
     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
