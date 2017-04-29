@@ -5,11 +5,13 @@
 */
 var width = 640;
 var height = 480;
+var camera;
+
 function init() {
     var game = $("<canvas width=\"" + width + "\" height=\"" + height + "\" />");
     $("#game").append(game);
     var engine = new BABYLON.Engine(game[0], true);
-    initInput();
+    initInput(game[0]);
     window.addEventListener('resize', resizeCanvas, false);
     function resizeCanvas() {
         width = game[0].width = window.innerWidth;
@@ -51,50 +53,18 @@ function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
 }
 
-var camera, light, speed = 0.2;
 function update(scene) {
-    if (isKeyDown(65)) { // A
-        camera.position.x -= speed;
-    }
-    if (isKeyDown(68)) { // D
-        camera.position.x += speed;
-    }
-    if (isKeyDown(87)) { // W
-        camera.position.z += speed;
-    }
-    if (isKeyDown(83)) { // S
-        camera.position.z -= speed;
-    }
-    if (isKeyDown(32)) { // Space
-        camera.position.y += speed;
-    }
-    if (isKeyDown(16)) { // Shift
-        camera.position.y -= speed;
-    }
+    updateWorld(scene);
 }
 
 function createScene(canvas, engine) {
 
     var scene = new BABYLON.Scene(engine);
-    var loader = new BABYLON.AssetsManager(scene);
+    camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(0, 0, 0), scene);
+    camera.heightOffset = 8;
 
-    scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.8);
+    initWorld(scene);
 
-    camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-    camera.setTarget(BABYLON.Vector3.Zero());
-    camera.speed = 0.2;
-
-    light = createLight(scene, "light", camera.position, camera.rotation);
-
-    var mat = createTextureMaterial(scene, "tex1", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/grass.png", Vec2(1.0, 1.0));
-
-    var plane = createPlane(scene, "ground", Vec3(0, 0, 0), Vec2(10, 10), mat);
-
-    loadMesh(loader, "Tree1", "DeadTree1.obj", new BABYLON.Vector3(0, 0, 0), mat);
-    loadMesh(loader, "Tree2", "DeadTree2.obj", new BABYLON.Vector3(0, 0, -2), mat);
-
-
-    loader.load();
     return scene;
 }
 
@@ -121,7 +91,7 @@ function createColorMaterial(scene, name, color) {
 }
 
 function createPlane(scene, name, pos, size, mat) {
-    var plane = BABYLON.Mesh.CreateGround(name, size.x, size.y, 1, scene, false);
+    var plane = new BABYLON.Mesh.CreateGround(name, size.x, size.y, 1, scene, false);
     plane.position = pos;
     plane.material = mat;
     return plane;
@@ -133,19 +103,28 @@ function createLight(scene, name, pos, dir) {
     return light;
 }
 
-function loadMesh(loader, name, obj, pos, mat) {
-    var mt = loader.addMeshTask(name, "", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/", obj);
-    mt.onSuccess = function (task) {
-        var mesh = task.loadedMeshes[0];
-        if (pos != null) mesh.position = pos;
-        if (mat != null) mesh.material = mat;
-    }
-    mt.onError = function (task) {
-        console.log("Error:", task);
-    }
-    return mt;
+function HemisphericLight(scene, name, pos, intensity) {
+    var light = new BABYLON.HemisphericLight(name, pos, scene);
+    light.intensity = intensity;
+    return light;
 }
 
+function loadMesh(loader, name, obj, pos, scale, mat) {
+    var mt = loader.addMeshTask(name, "", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/", obj);
+    var deferred = $.Deferred();
+    mt.onSuccess = function (task) {
+        var mesh = task.loadedMeshes[0];
+        mesh.position = pos;
+        mesh.material = mat;
+        mesh.scaling = scale;
+        deferred.resolve(mesh);
+    }
+    mt.onError = function (task) {
+        var mesh = task.loadedMeshes[0];
+        deferred.reject(mesh);
+    }
+    return deferred.promise();
+}
 
 function read(arr, index) {
     return arr != null && Object.keys(arr).length > index ? arr[index] : null;

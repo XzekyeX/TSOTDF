@@ -11,19 +11,32 @@ var keyTyped = [MAX_KEYS];
 var buttons = [MAX_BUTTONS];
 var buttonState = [MAX_BUTTONS];
 var buttonClicked = [MAX_BUTTONS];
-function initInput(){
-	window.addEventListener('keydown',function(e){
+var mouseX, mouseY;
+function initInput(canvas) {
+	window.addEventListener('keydown', function (e) {
 		keys[e.keyCode || e.which] = true;
-	},true);    
-	window.addEventListener('keyup',function(e){
+	}, true);
+	window.addEventListener('keyup', function (e) {
 		keys[e.keyCode || e.which] = false;
-	},true);
-	window.addEventListener('mousedown',function(e){
-		buttons[e.keyCode] = true;
-	},true);    
-	window.addEventListener('mouseup',function(e){
-		buttons[e.keyCode] = false;
-	},true);
+	}, true);
+	window.addEventListener('mousedown', function (e) {
+		buttons[e.keyCode || e.which] = true;
+	}, true);
+	window.addEventListener('mouseup', function (e) {
+		buttons[e.keyCode || e.which] = false;
+	}, true);
+	window.addEventListener('mousemove', function (evt) {
+		var mouse = getMousePos(canvas, evt);
+		mouseX = mouse.x;
+		mouseY = mouse.y;
+	});
+}
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+	};
 }
 
 function updateInput() {
@@ -55,4 +68,17 @@ function isButtonDown(button) {
 function isButtonClicked(button) {
 	if (button >= 0 && button <= buttonClicked.length - 1) return buttonClicked[button];
 	return false;
+}
+
+function GetAxis(axis) {
+	switch (axis) {
+		case "Vertical":
+			return isKeyDown(Keys.W) && isKeyDown(Keys.S) ? 0 : isKeyDown(Keys.W) ? 1 : isKeyDown(Keys.S) ? -1 : 0;
+		case "Horizontal":
+			return isKeyDown(Keys.A) && isKeyDown(Keys.D) ? 0 : isKeyDown(Keys.D) ? 1 : isKeyDown(Keys.A) ? -1 : 0;
+	}
+}
+
+var Keys = {
+	A: 65, D: 68, W: 87, S: 83
 }
