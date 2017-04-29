@@ -44,14 +44,6 @@ function init() {
     });
 }
 
-function getCurrentTimeMills() {
-    return (new Date()).getTime();
-}
-
-//value min max
-function clamp(value, min, max) {
-    return value >= max ? max : value <= min ? min : value;
-}
 
 function update(scene) {
     updateWorld(scene);
@@ -68,13 +60,6 @@ function createScene(canvas, engine) {
     return scene;
 }
 
-function Vec3(x, y, z) {
-    return new BABYLON.Vector3(x, y, z);
-}
-
-function Vec2(x, y) {
-    return new BABYLON.Vector2(x, y);
-}
 
 function createTextureMaterial(scene, name, file, scale) {
     var mat = new BABYLON.StandardMaterial(name, scene);

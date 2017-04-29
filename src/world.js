@@ -1,22 +1,26 @@
+/**
+*
+* @author Mikko Tekoniemi 
+* 
+*/
 var player;
 var offset = new BABYLON.Vector3(0, 8.0, -12.5);
 function updateWorld(scene) {
     player.then(function (task) {
         var v = GetAxis("Vertical");
         var h = GetAxis("Horizontal");
+        var forward = toForward(task.rotation);
+        var moveDir = Vec3(h, 0, v);
+        var rot = LookRotation(ProjectOnPlane(forward, BABYLON.Vector3.Up()), BABYLON.Vector3.Up());
+        var move = multiplyVec3(moveDir, rot);
         var speed = 0.2;
-        task.position.z += v * speed;
-        task.position.x += h * speed;
+        task.position.x += move.x * speed;
+        task.position.z += move.y * speed;
         // console.log(task.position);
         camera.setTarget(task.position);
-        var target = merge(task.position, offset);
-        console.log(target);
+        var target = addVec3(task.position, offset);
         camera.position = BABYLON.Vector3.Lerp(camera.position, target, 0.125);
     });
-}
-
-function merge(a, b) {
-    return new BABYLON.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
 function initWorld(scene) {
