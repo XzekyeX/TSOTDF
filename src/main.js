@@ -5,12 +5,11 @@
 */
 var width = 640;
 var height = 480;
-var blue = 1.0;
-var dir = 0;
 function init() {
     var game = $("<canvas width=\"" + width + "\" height=\"" + height + "\" />");
     $("#game").append(game);
     var engine = new BABYLON.Engine(game[0], true);
+    initInput();
     window.addEventListener('resize', resizeCanvas, false);
     function resizeCanvas() {
         width = game[0].width = window.innerWidth;
@@ -30,6 +29,7 @@ function init() {
         lastTime = now;
         while (delta >= 1) {
             delta--;
+            updateInput();
             update(scene);
             ups++;
         }
@@ -50,76 +50,87 @@ function getCurrentTimeMills() {
 function clamp(value, min, max) {
     return value >= max ? max : value <= min ? min : value;
 }
-var camera, light;
-function update(scene) {
-    // var dude = scene.getMeshByUniqueID(0);
-    // console.log("Dude:",dude);
-    light.position.x = camera.position.x;
-    light.position.y = camera.position.y + 10
-    light.position.z = camera.position.z;
-    // light.rotation = camera.rotation;
 
+var camera, light, speed = 0.2;
+function update(scene) {
+    if (isKeyDown(65)) { // A
+        camera.position.x -= speed;
+    }
+    if (isKeyDown(68)) { // D
+        camera.position.x += speed;
+    }
+    if (isKeyDown(87)) { // W
+        camera.position.z += speed;
+    }
+    if (isKeyDown(83)) { // S
+        camera.position.z -= speed;
+    }
+    if (isKeyDown(32)) { // Space
+        camera.position.y += speed;
+    }
+    if (isKeyDown(16)) { // Shift
+        camera.position.y -= speed;
+    }
 }
 
 function createScene(canvas, engine) {
 
-    // Now create a basic Babylon Scene object 
     var scene = new BABYLON.Scene(engine);
-
-    // Change the scene background color to green.
-    scene.clearColor = new BABYLON.Color3(0.0, 0.0, 0.0);
-
-    // This creates and positions a free camera
-    camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-    camera.speed = 0.2;
-    // This targets the camera to scene origin
-    camera.setTarget(BABYLON.Vector3.Zero());
-
-    // This attaches the camera to the canvas
-    camera.attachControl(canvas, false);
-
-
-        // Ground
-    var ground = BABYLON.Mesh.CreateGround("ground", 100, 100, 1, scene, false);
-    var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-    groundMaterial.specularColor = BABYLON.Color3.Black();
-    ground.material = groundMaterial;
-	
-    // Meshes and Materials
-    var materialPlane = new BABYLON.StandardMaterial("texturePlane", scene);
-    materialPlane.diffuseTexture = new BABYLON.Texture("res/grass.png", scene);
-    materialPlane.diffuseTexture.uScale = 5.0;//Repeat 5 times on the Vertical Axes
-    materialPlane.diffuseTexture.vScale = 5.0;//Repeat 5 times on the Horizontal Axes
-    materialPlane.backFaceCulling = false;//Allways show the front and the back of an element
-	ground.material=materialPlane;
-
     var loader = new BABYLON.AssetsManager(scene);
-    var mat = new BABYLON.StandardMaterial("tex1", scene);
-    mat.diffuseColor = new BABYLON.Color3(0.6, 0.4, 0.1);
 
-    loadMesh(loader, "Tree1", "DeadTree1.obj", new BABYLON.Vector3(-5, 0, -5), mat);
-    loadMesh(loader, "Tree2", "DeadTree2.obj", new BABYLON.Vector3(0, 0, -10), mat);
-    loadMesh(loader, "Dude", "Dude.obj", new BABYLON.Vector3(0, 0, 0));
+    scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.8);
+
+    camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+    camera.setTarget(BABYLON.Vector3.Zero());
+    camera.speed = 0.2;
+
+    light = createLight(scene, "light", camera.position, camera.rotation);
+
+    var mat = createTextureMaterial(scene, "tex1", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/grass.png", Vec2(1.0, 1.0));
+
+    var plane = createPlane(scene, "ground", Vec3(0, 0, 0), Vec2(10, 10), mat);
+
+    loadMesh(loader, "Tree1", "DeadTree1.obj", new BABYLON.Vector3(0, 0, 0), mat);
+    loadMesh(loader, "Tree2", "DeadTree2.obj", new BABYLON.Vector3(0, 0, -2), mat);
+
 
     loader.load();
-
-    // This creates a light, aiming 0,1,0 - to the sky.
-    light = new BABYLON.SpotLight("", new BABYLON.Vector3.Zero(), new BABYLON.Vector3.Zero(), 0, 0, scene);
-    light.name = "My Slowly and Discretely Constructed Spot Light"
-    light.position = new BABYLON.Vector3(0, 30, -10);
-    light.direction = new BABYLON.Vector3(0, -1, 0);
-    light.angle = 0.8;
-    light.exponent = 2;
-    light.intensity = 0.6;
-    light.diffuse = new BABYLON.Color3(1, 1, 1);
-    light.specular = new BABYLON.Color3(1, 1, 1);
-    light.setEnabled(1);
-
     return scene;
 }
 
 function Vec3(x, y, z) {
     return new BABYLON.Vector3(x, y, z);
+}
+
+function Vec2(x, y) {
+    return new BABYLON.Vector2(x, y);
+}
+
+function createTextureMaterial(scene, name, file, scale) {
+    var mat = new BABYLON.StandardMaterial(name, scene);
+    mat.diffuseTexture = new BABYLON.Texture(file, scene);
+    mat.diffuseTexture.uScale = scale.x;
+    mat.diffuseTexture.vScale = scale.y;
+    return mat;
+}
+
+function createColorMaterial(scene, name, color) {
+    var mat = new BABYLON.StandardMaterial(name, scene);
+    mat.diffuseColor = color;
+    return mat;
+}
+
+function createPlane(scene, name, pos, size, mat) {
+    var plane = BABYLON.Mesh.CreateGround(name, size.x, size.y, 1, scene, false);
+    plane.position = pos;
+    plane.material = mat;
+    return plane;
+}
+
+function createLight(scene, name, pos, dir) {
+    var light = new BABYLON.DirectionalLight(name, dir, scene);
+    light.position = pos;
+    return light;
 }
 
 function loadMesh(loader, name, obj, pos, mat) {
@@ -134,6 +145,7 @@ function loadMesh(loader, name, obj, pos, mat) {
     }
     return mt;
 }
+
 
 function read(arr, index) {
     return arr != null && Object.keys(arr).length > index ? arr[index] : null;
