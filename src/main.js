@@ -25,6 +25,8 @@ function init() {
     var lastTime = window.performance.now();
     var timer = getCurrentTimeMills();
     var ups = 0;
+    var showFps = $("<b style=\"font-size: 20px; color:white;\"></b>");
+    $("#fps").append(showFps);
     engine.runRenderLoop(function () {
         var now = window.performance.now();
         delta += (now - lastTime) * 0.06;
@@ -39,6 +41,7 @@ function init() {
         if ((getCurrentTimeMills() - timer) >= 1000) {
             timer += 1000;
             // console.log("ups[" + ups + "]");
+            showFps[0].innerHTML = engine.getFps().toFixed() + " fps, " + ups + " ups";
             ups = 0;
         }
     });
@@ -52,9 +55,8 @@ function update(scene) {
 function createScene(canvas, engine) {
 
     var scene = new BABYLON.Scene(engine);
-    camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(0, 0, 0), scene);
-    camera.heightOffset = 8;
-
+    camera = new BABYLON.ArcRotateCamera("camera", -1.57, 1, 40, BABYLON.Vector3.Zero(), scene);
+    camera.attachControl(canvas, false);
     initWorld(scene);
 
     return scene;
@@ -90,6 +92,12 @@ function createLight(scene, name, pos, dir) {
 
 function HemisphericLight(scene, name, pos, intensity) {
     var light = new BABYLON.HemisphericLight(name, pos, scene);
+    light.intensity = intensity;
+    return light;
+}
+
+function SpotLight(scene, name, pos, dir, angle, exponent, intensity) {
+    var light = new BABYLON.SpotLight(name, pos, dir, angle, exponent, scene);
     light.intensity = intensity;
     return light;
 }

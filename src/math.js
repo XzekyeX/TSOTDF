@@ -47,6 +47,18 @@ function Vec2(x, y) {
     return new BABYLON.Vector2(x, y);
 }
 
+function rand(min, max) {
+    return Math.floor((Math.random() * (max - min)) + min);
+}
+// Converts from degrees to radians.
+function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees.
+function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+};
 /**
  * 
  * @param {*} a 
@@ -79,7 +91,7 @@ function FromToRotation(a, b) {
     var c = BABYLON.Vector3.Cross(a, b);
     var w = Math.sqrt(Math.pow(a.length(), 2) * Math.pow(b.length(), 2)) + (BABYLON.Vector3.Dot(a, b));
     var result = new BABYLON.Quaternion(c.x, c.y, c.z, w);
-   // result.normalize();
+    // result.normalize();
     // console.log("result", result);
     return result;
 }

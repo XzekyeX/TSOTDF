@@ -3,43 +3,62 @@
 * @author Mikko Tekoniemi 
 * 
 */
-var player;
-var offset = new BABYLON.Vector3(0, 8.0, -12.5);
-function updateWorld(scene) {
-    player.then(function (task) {
-        var v = GetAxis("Vertical");
-        var h = GetAxis("Horizontal");
-        var forward = toForward(task.rotation);
-        var moveDir = Vec3(h, 0, v);
-        var rot = LookRotation(ProjectOnPlane(forward, BABYLON.Vector3.Up()), BABYLON.Vector3.Up());
-        var move = multiplyVec3(moveDir, rot);
-        var speed = 0.2;
-        task.position.x += move.x * speed;
-        task.position.z += move.y * speed;
-        // console.log(task.position);
-        camera.setTarget(task.position);
-        var target = addVec3(task.position, offset);
-        camera.position = BABYLON.Vector3.Lerp(camera.position, target, 0.125);
-    });
-}
-
+var player, light;
+var offset = new BABYLON.Vector3(0, 4.0, 0);
+var TREES = [];
 function initWorld(scene) {
     var loader = new BABYLON.AssetsManager(scene);
 
     scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.8);
 
 
-    var light = HemisphericLight(scene, "light", camera.position, 0.7);
+    light = SpotLight(scene, "light", BABYLON.Vector3.Zero(), Vec3(0, -1, 0), 0.8, 2, 0.5);
 
-    var mat = createTextureMaterial(scene, "tex1", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/grass.png", Vec2(1.0, 1.0));
+    var ground_mat = createTextureMaterial(scene, "tex1", "https://raw.githubusercontent.com/XzekyeX/TSOTDF/master/res/grass.png", Vec2(1.0, 1.0));
+    var plane = createPlane(scene, "ground", Vec3(0, 0, 0), Vec2(50, 50), ground_mat);
 
-    var plane = createPlane(scene, "ground", Vec3(0, 0, 0), Vec2(10, 10), mat);
-
-    loadMesh(loader, "Tree1", "DeadTree1.obj", Vec3(0, 0, 0), Vec3(1.0, 1.0, 1.0), mat);
-    loadMesh(loader, "Tree2", "DeadTree2.obj", Vec3(4, 0, 0), Vec3(1.0, 1.0, 1.0), mat);
-    player = loadMesh(loader, "Player", "Dude.obj", Vec3(4, 0, -4), Vec3(1.0, 1.0, 1.0), mat);
+    var tree_mat = createColorMaterial(scene, "col1", new BABYLON.Color3(0.4, 0.3, 0.1))
+    var tree = loadMesh(loader, "Tree", "DeadTree1.obj", Vec3(0, 0, 0), Vec3(1.0, 1.0, 1.0), tree_mat);
 
 
+    var player_mat = createColorMaterial(scene, "col1", new BABYLON.Color3(0.2, 0.5, 0.8))
+    player = loadMesh(loader, "Player", "Dude.obj", Vec3(4, 1.5, -4), Vec3(0.5, 0.5, 0.5), player_mat);
 
     loader.load();
+
+    var amount = 100;
+    tree.then(function (task) {
+        for (var i = 0; i < amount; i++) {
+            var t = task.clone(task.name);
+            t.id = task.name + (TREES.length + 1);
+            var pos = getAvailableTreePos(-25, 25);
+            t.position = pos;
+            TREES.push(t);
+            //console.log("new tree has been created! on pos:", t.position);
+        }
+    });
+}
+
+function getAvailableTreePos(min, max) {
+    var x = rand(min, max);
+    var z = rand(min, max);
+    var pos = Vec3(x, 0, z);
+    if (!checkTreePos(pos)) {
+        console.log("Not Available Pos:", pos);
+        return getAvailableTreePos();
+    }
+    return pos;
+}
+
+function checkTreePos(pos) {
+    for (var tree in TREES) {
+        if (tree.position == pos) return false;
+    }
+    return true;
+}
+
+function updateWorld(scene) {
+    player.then(function (task) {
+        light.position = addVec3(task.position, offset);
+    });
 }
