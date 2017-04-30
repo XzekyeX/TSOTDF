@@ -4,7 +4,7 @@
 * 
 */
 var player, light;
-var offset = new BABYLON.Vector3(0, 4.0, 0);
+var offset = new BABYLON.Vector3(0, 12.0, 0);
 var TREES = [];
 function initWorld(scene) {
     var loader = new BABYLON.AssetsManager(scene);
@@ -59,6 +59,11 @@ function checkTreePos(pos) {
 
 function updateWorld(scene) {
     player.then(function (task) {
-        light.position = addVec3(task.position, offset);
+        var speed = 0.1;
+        if (isKeyDown(Keys.Q)) task.rotation.y -= speed;
+        if (isKeyDown(Keys.E)) task.rotation.y += speed;
+        light.position = addVec3(task.position, Vec3(0, 3, 0));
+        light.direction.x = Math.sin((task.rotation.y));
+        light.direction.z = Math.cos((task.rotation.y));
     });
 }
