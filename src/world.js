@@ -56,12 +56,30 @@ function checkTreePos(pos) {
     }
     return true;
 }
-
+var rad = 1.5707963267948966;
 function updateWorld(scene) {
     player.then(function (task) {
         var speed = 0.1;
-        if (isKeyDown(Keys.Q)) task.rotation.y -= speed;
-        if (isKeyDown(Keys.E)) task.rotation.y += speed;
+        var rotate = 0.1;
+        if (isKeyDown(Keys.Q)) task.rotation.y -= rotate;
+        if (isKeyDown(Keys.E)) task.rotation.y += rotate;
+
+        if (isKeyDown(Keys.A)) {
+            task.position.x -= Math.sin(task.rotation.y + rad) * speed;
+            task.position.z -= Math.cos(task.rotation.y + rad) * speed;
+        }
+        if (isKeyDown(Keys.D)) {
+            task.position.x -= Math.sin(task.rotation.y - rad) * speed;
+            task.position.z -= Math.cos(task.rotation.y - rad) * speed;
+        }
+        if (isKeyDown(Keys.S)) {
+            task.position.x -= Math.sin(task.rotation.y) * speed;
+            task.position.z -= Math.cos(task.rotation.y) * speed;
+        }
+        if (isKeyDown(Keys.W)) {
+            task.position.x += Math.sin(task.rotation.y) * speed;
+            task.position.z += Math.cos(task.rotation.y) * speed;
+        }
         light.position = addVec3(task.position, Vec3(0, 3, 0));
         light.direction.x = Math.sin((task.rotation.y));
         light.direction.z = Math.cos((task.rotation.y));
